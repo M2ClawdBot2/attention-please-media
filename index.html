@@ -356,39 +356,22 @@
         }
 
         .about-visual {
-            position: relative;
-            height: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .floating-card {
-            position: absolute;
             background: var(--dark-gray);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 12px;
             padding: 32px;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
         .floating-card:hover {
-            transform: translateY(-8px) !important;
-        }
-
-        .floating-card.card-1 {
-            top: 0;
-            right: 0;
-            width: 280px;
-        }
-
-        .floating-card.card-2 {
-            top: 120px;
-            left: 0;
-            width: 260px;
-        }
-
-        .floating-card.card-3 {
-            bottom: 0;
-            right: 40px;
-            width: 300px;
+            transform: translateY(-4px);
+            border-color: var(--accent);
         }
 
         .card-number {
@@ -838,7 +821,6 @@
     <ul class="nav-links">
         <li><a href="#services">Services</a></li>
         <li><a href="#process">Process</a></li>
-        <li><a href="#work">Work</a></li>
         <li><a href="#why-us">Why Us</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
@@ -898,15 +880,15 @@
             <p>Other agencies charge you <span class="highlight">$5,000–$20,000</span> for a WordPress template with your logo slapped on it. Every site we deliver is <span class="highlight">custom designed for you</span> — and we do it for a fraction of that price because we believe great design shouldn't require a second mortgage.</p>
         </div>
         <div class="about-visual reveal">
-            <div class="floating-card card-1" style="transform: rotate(2deg)">
+            <div class="floating-card">
                 <div class="card-number">100%</div>
                 <div class="card-label">Custom built. Zero templates.</div>
             </div>
-            <div class="floating-card card-2" style="transform: rotate(-3deg)">
+            <div class="floating-card">
                 <div class="card-number">48h</div>
                 <div class="card-label">Average turnaround time.</div>
             </div>
-            <div class="floating-card card-3" style="transform: rotate(1deg)">
+            <div class="floating-card">
                 <div class="card-number">∞</div>
                 <div class="card-label">Revisions until you love it.</div>
             </div>
@@ -972,29 +954,7 @@
     </div>
 </section>
 
-<!-- Work -->
-<section id="work">
-    <div class="reveal">
-        <div class="section-label">Portfolio</div>
-        <h2 class="section-title">Selected work.</h2>
-    </div>
-    <div class="work-grid">
-        <div class="work-item reveal">
-            <div class="work-preview">UFCR</div>
-            <div class="work-overlay">
-                <div class="work-overlay-title">UFCR</div>
-                <div class="work-overlay-type">Political Organization — Landing Page</div>
-            </div>
-        </div>
-        <div class="work-item reveal">
-            <div class="work-preview">Coming Soon</div>
-            <div class="work-overlay">
-                <div class="work-overlay-title">Your Brand?</div>
-                <div class="work-overlay-type">Let's build something together</div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- Portfolio section coming soon -->
 
 <!-- Why Us -->
 <section id="why-us">
@@ -1041,7 +1001,7 @@
     <div class="footer-right">
         <a href="mailto:attentionpleasemedia@gmail.com">Email</a>
         <a href="#services">Services</a>
-        <a href="#work">Work</a>
+        <a href="#why-us">Why Us</a>
     </div>
 </footer>
 
@@ -1080,18 +1040,7 @@
 
     reveals.forEach(el => observer.observe(el));
 
-    // Parallax floating cards
-    document.addEventListener('mousemove', (e) => {
-        const cards = document.querySelectorAll('.floating-card');
-        const x = (e.clientX / window.innerWidth - 0.5) * 20;
-        const y = (e.clientY / window.innerHeight - 0.5) * 20;
-        
-        cards.forEach((card, i) => {
-            const factor = (i + 1) * 0.5;
-            const baseRotation = card.classList.contains('card-1') ? 2 : card.classList.contains('card-2') ? -3 : 1;
-            card.style.transform = `translate(${x * factor}px, ${y * factor}px) rotate(${baseRotation}deg)`;
-        });
-    });
+    // Cards hover handled by CSS
 
     // Smooth nav scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
