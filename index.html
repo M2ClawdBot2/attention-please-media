@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attention Please Media</title>
+    <meta name="description" content="Attention Please Media builds premium custom websites with bold typography, cinematic motion, and fast performance—starting at $250.">
+    <meta property="og:title" content="Attention Please Media">
+    <meta property="og:description" content="Premium websites that demand attention. Custom design, fast performance, smooth animations.">
+    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -797,7 +801,7 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            nav { padding: 20px 24px; }
+            nav { padding: 20px 24px; mix-blend-mode: normal; background: rgba(10,10,10,0.6); backdrop-filter: blur(10px); }
             .nav-links { display: none; }
             section { padding: 80px 24px; }
             .about { grid-template-columns: 1fr; gap: 48px; }
@@ -882,6 +886,7 @@
     </div>
 </nav>
 
+<main>
 <!-- Hero -->
 <section class="hero">
     <div class="hero-bg-text">ATTENTION PLEASE ATTENTION PLEASE&nbsp;</div>
@@ -1049,6 +1054,8 @@
     </div>
 </section>
 
+</main>
+
 <footer>
     <div class="footer-left">© 2026 Attention Please Media. All rights reserved.</div>
     <div class="footer-right">
@@ -1120,7 +1127,30 @@
         });
     });
 
-    // (removed unused counter animation)
+    // Counter animation for about cards
+    function animateValue(el, start, end, duration, suffix = '') {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * (end - start) + start) + suffix;
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    const cards = document.querySelectorAll('.floating-card .card-number');
+    const cardObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            animateValue(cards[0], 0, 100, 900, '%');
+            animateValue(cards[1], 0, 48, 900, 'h');
+            cards[2].textContent = '∞';
+            obs.disconnect();
+        });
+    }, { threshold: 0.3 });
+    cardObserver.observe(document.querySelector('.about'));
 </script>
 
 </body>
