@@ -23,7 +23,6 @@
         }
 
         html {
-            scroll-behavior: smooth;
             overflow-x: hidden;
         }
 
@@ -47,9 +46,11 @@
             border: 2px solid var(--accent);
             border-radius: 50%;
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 9999;
-            transition: transform 0.15s ease, opacity 0.15s ease;
+            will-change: transform;
             mix-blend-mode: difference;
         }
 
@@ -59,8 +60,11 @@
             background: var(--accent);
             border-radius: 50%;
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 9999;
+            will-change: transform;
         }
 
         .cursor.hover {
@@ -778,6 +782,19 @@
             50% { transform: translate(30px, 30px); }
         }
 
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .marquee-track, .hero-bg-text, .scroll-line, .glow-orb {
+                animation: none !important;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             nav { padding: 20px 24px; }
@@ -813,6 +830,34 @@
 
         @media (max-width: 768px) {
             .menu-btn { display: flex; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(10,10,10,0.95);
+                backdrop-filter: blur(20px);
+                justify-content: center;
+                align-items: center;
+                gap: 32px;
+                z-index: 100;
+            }
+            .nav-links.open a {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+            .menu-btn.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .menu-btn.active span:nth-child(2) {
+                opacity: 0;
+            }
+            .menu-btn.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
         }
     </style>
 </head>
@@ -1014,17 +1059,21 @@
 </footer>
 
 <script>
-    // Custom cursor
+    // Custom cursor (rAF for performance)
     const cursor = document.getElementById('cursor');
     const cursorDot = document.getElementById('cursorDot');
     
-    // Only show custom cursor on desktop
     if (window.matchMedia('(pointer: fine)').matches) {
+        let mouseX = 0, mouseY = 0, rafId = null;
+        function renderCursor() {
+            cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+            cursorDot.style.transform = `translate(${mouseX - 2.5}px, ${mouseY - 2.5}px)`;
+            rafId = null;
+        }
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
-            cursorDot.style.left = e.clientX - 2.5 + 'px';
-            cursorDot.style.top = e.clientY - 2.5 + 'px';
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (!rafId) rafId = requestAnimationFrame(renderCursor);
         });
 
         document.querySelectorAll('a, button, .service-card, .work-item').forEach(el => {
@@ -1048,7 +1097,19 @@
 
     reveals.forEach(el => observer.observe(el));
 
-    // Cards hover handled by CSS
+    // Mobile menu toggle
+    const menuBtn = document.querySelector('.menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    menuBtn.addEventListener('click', () => {
+        menuBtn.classList.toggle('active');
+        navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuBtn.classList.remove('active');
+            navLinks.classList.remove('open');
+        });
+    });
 
     // Smooth nav scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1059,18 +1120,7 @@
         });
     });
 
-    // Counter animation for cards
-    function animateValue(el, start, end, duration, suffix = '') {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            el.textContent = Math.floor(eased * (end - start) + start) + suffix;
-            if (progress < 1) window.requestAnimationFrame(step);
-        };
-        window.requestAnimationFrame(step);
-    }
+    // (removed unused counter animation)
 </script>
 
 </body>
